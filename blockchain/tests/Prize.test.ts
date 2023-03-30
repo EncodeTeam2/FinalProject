@@ -58,7 +58,6 @@ describe("Prize Contract", async () => {
     beforeEach(async () => {
       playGame = await prizeContract.connect(player1).play({ value: playFee });
     });
-    // Could be reset or first go.
 
     it("Starts new game and updates game state", async () => {
       const gameState = await prizeContract.isOpen();
@@ -68,6 +67,11 @@ describe("Prize Contract", async () => {
     it("Adds timestamp to game stae", async () => {
       const gameTime = await prizeContract.startTime();
       expect(gameTime).to.not.eq(0);
+    });
+
+    it("Updates prize pool", async () => {
+      const pool = await prizeContract.prizePool();
+      expect(pool).to.eq(playFee);
     });
 
     it("Emits Play event", async () => {
@@ -100,34 +104,52 @@ describe("Prize Contract", async () => {
   //   });
   // });
 
-  // describe("When its open", async () => {
-  //   describe("When you are playing", async () => {
-  //     // reverts
-  //     it("msg.value different than expected from fee", async () => {
-  //       throw new Error("Not implemented");
-  //     });
+  describe("When its open", async () => {
+    describe("When you start another game", async () => {
+      let playGame: any;
+      beforeEach(async () => {
+        playGame = await prizeContract
+          .connect(player1)
+          .play({ value: playFee });
+      });
 
-  //     it("Plays successfully", async () => {
-  //       throw new Error("Not implemented");
-  //     });
-  //   });
+      it("reverts when you pay the wrong fee", async () => {
+        // const wrongFee = playFee.add(1);
+        // console.log(wrongFee);
+        // console.log(playFee);
+        // await expect(
+        //   (playGame = await prizeContract
+        //     .connect(player1)
+        //     .play({ value: wrongFee }))
+        // ).to.be.revertedWith("Only the fee should be payed.");
+      });
 
-  //   describe("When you are submitting highscore", async () => {
-  //     it("It's not a personal highscore nor game highscore", async () => {
-  //       throw new Error("Not implemented");
-  //     });
+      it("Plays another game successfully", async () => {
+        let secondGame: any;
+        expect(
+          (secondGame = await prizeContract
+            .connect(player2)
+            .play({ value: playFee }))
+        ).to.not.be.reverted;
+      });
+    });
 
-  //     it("It's not a personal highscore but it's game highscore", async () => {
-  //       throw new Error("Not implemented");
-  //     });
+    // describe("When you are submitting highscore", async () => {
+    //   it("It's not a personal highscore nor game highscore", async () => {
+    //     throw new Error("Not implemented");
+    //   });
 
-  //     it("It's a personal highscore but not game highscore", async () => {
-  //       throw new Error("Not implemented");
-  //     });
+    //   it("It's not a personal highscore but it's game highscore", async () => {
+    //     throw new Error("Not implemented");
+    //   });
 
-  //     it("It's a personal highscore and a game highscore", async () => {
-  //       throw new Error("Not implemented");
-  //     });
-  //   });
-  // });
+    //   it("It's a personal highscore but not game highscore", async () => {
+    //     throw new Error("Not implemented");
+    //   });
+
+    //   it("It's a personal highscore and a game highscore", async () => {
+    //     throw new Error("Not implemented");
+    //   });
+    // });
+  });
 });
