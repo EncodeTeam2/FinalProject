@@ -1,4 +1,4 @@
-*.yarn/*
+.yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
@@ -10,7 +10,7 @@
 !.yarn/cache
 #.pnp.*
 
-*node_modules
+node_modules
 .env
 coverage
 coverage.json
