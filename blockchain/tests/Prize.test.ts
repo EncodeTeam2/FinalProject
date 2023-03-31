@@ -4,6 +4,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber } from "ethers";
 import { Prize, Prize__factory } from "../typechain-types";
 import { time } from "console";
+import { setTimeout } from "timers/promises";
 
 describe("Prize Contract", async () => {
   let prizeContract: Prize;
@@ -104,17 +105,14 @@ describe("Prize Contract", async () => {
   //   });
   // });
 
-  describe("When its open", async () => {
+  describe("When game is open", async () => {
+    let playGame: any;
+    beforeEach(async () => {
+      playGame = await prizeContract.connect(player1).play({ value: playFee });
+    });
     describe("When you start another game", async () => {
-      let playGame: any;
-      beforeEach(async () => {
-        playGame = await prizeContract
-          .connect(player1)
-          .play({ value: playFee });
-      });
-
       it("reverts when you pay the wrong fee", async () => {
-        // const wrongFee = playFee.add(1);
+        //const wrongFee = ethers.utils.parseEther("1");
         // console.log(wrongFee);
         // console.log(playFee);
         // await expect(
@@ -134,22 +132,91 @@ describe("Prize Contract", async () => {
       });
     });
 
-    // describe("When you are submitting highscore", async () => {
-    //   it("It's not a personal highscore nor game highscore", async () => {
-    //     throw new Error("Not implemented");
-    //   });
+    describe("When you are submitting scores", async () => {
+      it("Updates game highscore when game highscore is beat", async () => {
+        const newScore = ethers.utils.parseEther("10");
+        const submitScore = await prizeContract
+          .connect(player1)
+          .submitScore(newScore);
+        const gameHighScore = await prizeContract.highestScore();
+        expect(gameHighScore).to.eq(newScore);
+      });
 
-    //   it("It's not a personal highscore but it's game highscore", async () => {
-    //     throw new Error("Not implemented");
-    //   });
+      it("Updates personal highscore when personal highscore is beat", async () => {
+        const newScore = ethers.utils.parseEther("10");
+        const submitScore = await prizeContract
+          .connect(player1)
+          .submitScore(newScore);
+        const personalHigh = await prizeContract.highScores(player1.address);
+        expect(personalHigh).to.eq(newScore);
+      });
 
-    //   it("It's a personal highscore but not game highscore", async () => {
-    //     throw new Error("Not implemented");
-    //   });
+      it("Maintains scores when submission is not personal or game highscore", async () => {
+        const firstScore = ethers.utils.parseEther("2");
+        const secondScore = ethers.utils.parseEther("10");
+        const score1 = await prizeContract
+          .connect(player1)
+          .submitScore(firstScore);
+        const score2 = prizeContract.connect(player1).submitScore(secondScore);
+        const personalHigh = await prizeContract.highScores(player1.address);
+        const gameHighScore = await prizeContract.highestScore();
+        expect(personalHigh).to.eq(firstScore);
+        expect(gameHighScore).to.eq(firstScore);
+      });
 
-    //   it("It's a personal highscore and a game highscore", async () => {
-    //     throw new Error("Not implemented");
-    //   });
+      it("Updates winning address correctly", async () => {
+        const firstScore = ethers.utils.parseEther("2");
+        const secondScore = ethers.utils.parseEther("10");
+        const thirdScore = ethers.utils.parseEther("8");
+
+        const firstSubmit = await prizeContract
+          .connect(player1)
+          .submitScore(firstScore);
+
+        const secondSubmit = await prizeContract
+          .connect(player2)
+          .submitScore(secondScore);
+
+        const thirdSubmit = await prizeContract
+          .connect(player1)
+          .submitScore(thirdScore);
+
+        const currentLeader = await prizeContract.winnerAddress();
+
+        expect(currentLeader).to.eq(player2.address);
+      });
+
+      // it("Updates correct when it's not a personal highscore but it's game highscore", async () => {
+      //   throw new Error("Not implemented");
+      // });
+      // it("It's a personal highscore but not game highscore", async () => {
+      //   throw new Error("Not implemented");
+      // });
+      // it("It's a personal highscore and a game highscore", async () => {
+      //   throw new Error("Not implemented");
+      // });
+    });
+  });
+  describe("When game is closed", async () => {
+    let playGame: any;
+    beforeEach(async () => {
+      playGame = await prizeContract.connect(player1).play({ value: playFee });
+    });
+    it("It allows winner to claim prize", async () => {
+      const firstSubmit = await prizeContract
+        .connect(player1)
+        .submitScore(ethers.utils.parseEther("2"));
+
+      await setTimeout(10000);
+      const claimPrize = await prizeContract.connect(player1).claim();
+      const pool = await prizeContract.prizePool();
+      expect(pool).to.eq(0);
+    });
+    // it("It rejects new game play", async () => {
+    //   await setTimeout(10000);
+    //   const playGame2 = await prizeContract
+    //     .connect(player1)
+    //     .play({ value: playFee });
     // });
   });
 });
