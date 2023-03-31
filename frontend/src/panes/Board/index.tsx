@@ -47,5 +47,6 @@ Board.defaultProps = {
   state: GameState.Initial,
   debug: false,
 };
+
 export default Board;
 export type { BoardProps };

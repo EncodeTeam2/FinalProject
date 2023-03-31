@@ -7,10 +7,10 @@ const StyledWelcome = styled.nav`
   user-select: none;
 
   > h1 {
-    margin: 95px 0 0 16px;
-    font-size: 144px;
+    margin: 144px 0 0 16px;
+    font-size: 40px;
     font-weight: 400;
-    text-transform: lowercase;
+    text-transform: uppercase;
   }
 
   > p {

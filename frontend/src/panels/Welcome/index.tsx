@@ -10,7 +10,7 @@ interface WelcomeProps {
 const Welcome = ({ onClick }: WelcomeProps) => {
   return (
     <StyledWelcome>
-      <h1>Snake</h1>
+      <h1>Jackpot Crawler</h1>
       <p>Choose level:</p>
       <Level onClick={onClick} />
     </StyledWelcome>

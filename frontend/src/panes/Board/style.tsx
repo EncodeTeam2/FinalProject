@@ -22,55 +22,6 @@ const appear = keyframes`
     }
 `;
 
-/* 
-// Poor performance
-const roleMixin = ({ food, state }: BoardProps) => {
-  const op =
-    state === GameState.End || state === GameState.Pausing ? '0.3' : '0.75';
-
-  let styles;
-  if (state === GameState.Initial) {
-    styles = food.map(
-      (f) => css`
-        > :nth-child(${f}) {
-          background-image: url(${foodSvg});
-          background-size: 100% 100%;
-          opacity: ${op};
-          animation: ${spin} 2s linear infinite;
-        }
-      `
-    );
-  } else if (state === GameState.End) {
-    styles = food.map(
-      (f) => css`
-        > :nth-child(${f}) {
-          background-image: url(${foodSvg});
-          background-size: 100% 100%;
-          opacity: ${op};
-        }
-      `
-    );
-  } else {
-    styles = food.map(
-      (f) => css`
-        > :nth-child(${f}) {
-          background-image: url(${foodSvg});
-          background-size: 100% 100%;
-          opacity: ${op};
-          animation: ${appear} 200ms cubic-bezier(0.5, 1, 0, 1.6),
-            ${spin} 3.5s cubic-bezier(0.2, 0.6, 0.4, 1) 200ms;
-          animation-play-state: ${state === GameState.Pausing
-            ? 'paused'
-            : 'running'};
-        }
-      `
-    );
-  }
-
-  return styles;
-};
- */
-
 const StyledStaticFood = styled.div.attrs<{ $opacity: string }>(({ $opacity }) => ({
   style: {
     opacity: $opacity,
@@ -103,7 +54,7 @@ const StyledAppearFood = styled(StyledStaticFood).attrs<{
 const StyledSnake = styled.div.attrs<{ $opacity: string }>(({ $opacity, theme }) => ({
   style: {
     opacity: $opacity,
-    backgroundColor: theme.accentColor,
+    backgroundColor: '#000000',
   },
 }))<{ $opacity: string }>`
   border-radius: 8px;
