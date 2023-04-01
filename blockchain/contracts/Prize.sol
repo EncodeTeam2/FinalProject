@@ -16,7 +16,7 @@ contract Prize {
     uint256 public highestScore;
 
     /// Fee paid for playing
-    uint256 public fee = 1 ether;
+    uint256 public fee = 0.1 ether;
 
     /// Address of owner to recieve winnings from prize pool
     address public winnerAddress;
