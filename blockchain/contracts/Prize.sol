@@ -6,8 +6,8 @@ pragma solidity ^0.8.9;
 /// @notice you can use this contract for games with a pooled winnings/ high score format
 /// @dev This contract collects payments for pay to play game that pays out proceeds to player with highest score
 contract Prize {
-    /// Time is hardcoded to 10 sec for testing demonstration purposes
-    uint256 public duration = 10;
+    /// Time is hardcoded to 300 sec
+    uint256 public duration = 300;
 
     /// Timestamp of the game starting time and date
     uint256 public startTime;
@@ -102,6 +102,9 @@ contract Prize {
             emit Start(gameId, msg.sender, block.timestamp);
             gameId++;
         }
+
+        // If no game was started, quit.
+        require(isOpen, "Game must be open.");
 
         // Revert if the value is not equal to the fee.
         require(msg.value == fee, "Only the fee should be payed.");
