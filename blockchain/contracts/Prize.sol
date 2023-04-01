@@ -6,8 +6,8 @@ pragma solidity ^0.8.9;
 /// @notice you can use this contract for games with a pooled winnings/ high score format
 /// @dev This contract collects payments for pay to play game that pays out proceeds to player with highest score
 contract Prize {
-    /// Time is hardcoded to 5 min for demonstration purposes
-    uint256 public duration = 120;
+    /// Time is hardcoded to 10 sec for testing demonstration purposes
+    uint256 public duration = 10;
 
     /// Timestamp of the game starting time and date
     uint256 public startTime;
