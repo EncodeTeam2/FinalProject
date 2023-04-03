@@ -1,6 +1,7 @@
-import { ethers } from "ethers";
-import "dotenv/config";
+/* import { ethers } from "ethers";
 import prizeContractJson from "./assets/Prize.json";
+import "dotenv/config";
+
 
 const PLAY_FEE = ethers.utils.parseEther("0.1");
 
@@ -76,18 +77,10 @@ async function main() {
   await prizeContract.deployed();
   console.log("Completed");
   console.log(`Contract deployed at ${prizeContract.address}`);
-
-  // Play game
-  console.log("Playing Game");
-  const playTx = await prizeContract.play({ value: PLAY_FEE });
-  await playTx.wait();
-
-  balanceBN = await signer.getBalance();
-  balance = Number(ethers.utils.formatEther(balanceBN));
-  console.log(`Wallet balance after play ${balance}`);
 }
 
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+ */
