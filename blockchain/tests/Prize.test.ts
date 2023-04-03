@@ -6,6 +6,7 @@ import { Prize, Prize__factory } from "../typechain-types";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { setTimeout } from "timers/promises";
 import { latest } from "@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time";
+import { Provider } from "@ethersproject/providers";
 
 describe("Prize Contract", async () => {
   let prizeContract: Prize;
@@ -162,36 +163,66 @@ describe("Prize Contract", async () => {
       await prizeContract.connect(player1).play({ value: playFee })
       // Mark high score with player 1
       await prizeContract.connect(player1).submitScore(INITIAL_HC_GAME_AND_PLAYER)
-      // Get latest block timemstamp.
-      const latestBlock = (await ethers.provider.getBlock("latest")).timestamp
-      // Set next blockTimestamp surpassing the duration.
-
-      // TODO: CHECK HOW TO INCREASE TIMESTAMP FROM HARDHAT TESTS AND NOT WAITING.
-      await time.setNextBlockTimestamp(latestBlock + duration.toNumber())
+      // Close the game increasing duration + 10 to the block timestamp.
+      await time.increase(duration.add(10));
     })
 
-    it("Plays", async () => {
-      await expect(await prizeContract.connect(player1).play({ value: playFee })).to.be.revertedWith("Game must be open.");
-      throw new Error("Not implemented");
+    describe("Plays", async () => {
+      it("Reverts", async () => {
+        await expect(prizeContract.connect(player1).play({ value: playFee })).to.be.revertedWith("Game must be open.");
+      })
     })
 
-    it("Scores", async () => {
-      await expect(await prizeContract.connect(player1).submitScore(INITIAL_HC_GAME_AND_PLAYER)).to.be.revertedWith("Game must be open.")
-      throw new Error("Not implemented");
+
+    describe("Scores", async () => {
+      it("Reverts", async () => {
+        await expect(prizeContract.connect(player1).submitScore(INITIAL_HC_GAME_AND_PLAYER)).to.be.revertedWith("Game must be open.")
+      })
     })
 
     describe("Claims", async () => {
-      it("As winner inside grace period", async () => {
-        throw new Error("Not implemented");
+      it("Successfully as winner inside grace period", async () => {
+        // Get balances before.
+        const accountBalanceBefore: BigNumber = await player1.getBalance()
+        const contractPoolBefore: BigNumber = await prizeContract.prizePool()
+
+        // Claim.
+        const claimTx = await prizeContract.connect(player1).claim()
+        const claimTxReceipt = await claimTx.wait()
+
+        // Get balances after (include fee).
+        const accountBalanceAfter: BigNumber = await player1.getBalance()
+        const contractPoolAfter: BigNumber = await prizeContract.prizePool()
+        const txFee: BigNumber = claimTxReceipt.gasUsed.mul(claimTxReceipt.effectiveGasPrice)
+
+        expect(accountBalanceAfter).to.be.equal(accountBalanceBefore.add(contractPoolBefore).sub(txFee))
+        expect(contractPoolAfter).to.be.equal(0)
       });
 
-      // reverts.
-      it("As anybody inside grace period", async () => {
-        throw new Error("Not implemented");
+      it("Reverting as anybody inside grace period", async () => {
+        await expect(prizeContract.connect(player2).claim()).to.be.revertedWith("Grace period for the winner still running.")
       });
 
-      it("As anybody outside grace period", async () => {
-        throw new Error("Not implemented");
+      it("Successfully as anybody outside grace period", async () => {
+        // Close the grace period.
+        await time.increase(duration.mul(2));
+
+        // Get balances before.
+        const accountBalanceBefore: BigNumber = await player2.getBalance()
+        const contractPoolBefore: BigNumber = await prizeContract.prizePool()
+
+        // Claim.
+        const claimTx = await prizeContract.connect(player2).claim()
+        const claimTxReceipt = await claimTx.wait()
+
+        // Get balances after (include fee).
+        const accountBalanceAfter: BigNumber = await player2.getBalance()
+        const contractPoolAfter: BigNumber = await prizeContract.prizePool()
+        const txFee: BigNumber = claimTxReceipt.gasUsed.mul(claimTxReceipt.effectiveGasPrice)
+
+        expect(accountBalanceAfter).to.be.equal(accountBalanceBefore.add(contractPoolBefore).sub(txFee))
+        expect(contractPoolAfter).to.be.equal(0)
+
       });
     });
   });

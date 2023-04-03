@@ -73,6 +73,7 @@ contract Prize {
     /// Modifier that will check that a game is open.
     modifier mustBeOpen() {
         require(startTime != 0 && isOpen, "Game must be open.");
+        require(block.timestamp < startTime + duration, "Game must be open.");
         _;
     }
 
@@ -103,8 +104,11 @@ contract Prize {
             gameId++;
         }
 
-        // If no game was started, quit.
-        require(isOpen, "Game must be open.");
+        // To play, game must be open.
+        require(
+            isOpen && block.timestamp < startTime + duration,
+            "Game must be open."
+        );
 
         // Revert if the value is not equal to the fee.
         require(msg.value == fee, "Only the fee should be payed.");
