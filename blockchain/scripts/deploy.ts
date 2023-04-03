@@ -78,13 +78,13 @@ async function main() {
   console.log(`Contract deployed at ${prizeContract.address}`);
 
   // Play game
-  console.log("Playing Game");
-  const playTx = await prizeContract.play({ value: PLAY_FEE });
-  await playTx.wait();
+  // console.log("Playing Game");
+  // const playTx = await prizeContract.play({ value: PLAY_FEE });
+  // await playTx.wait();
 
-  balanceBN = await signer.getBalance();
-  balance = Number(ethers.utils.formatEther(balanceBN));
-  console.log(`Wallet balance after play ${balance}`);
+  // balanceBN = await signer.getBalance();
+  // balance = Number(ethers.utils.formatEther(balanceBN));
+  // console.log(`Wallet balance after play ${balance}`);
 }
 
 main().catch((error) => {
