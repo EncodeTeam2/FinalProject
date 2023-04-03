@@ -39,6 +39,12 @@ yarn hardhat test
 yarn run ts-node --files ./scripts/hre/deploy.ts
 ```
 
+## Test expected flow
+
+```shell
+yarn run ts-node --files ./scripts/hre/completeTest.ts
+```
+
 # Deploy to Polygon Mumbai
 
 In order to properly deploy to Polygon Mumbai, you need to have a funded account with MATIC. You can deploy the contract by running the following command:

@@ -1,10 +1,7 @@
 import { ethers } from "hardhat";
 import { Prize, Prize__factory } from "../../typechain-types";
 
-async function deployPrize() {
-    //  connected to localhost blockchain
-    const provider = ethers.provider;
-
+export async function deployPrize(): Promise<string> {
     // Get accounts signers
     const accounts = await ethers.getSigners();
 
@@ -28,6 +25,7 @@ async function deployPrize() {
         Confirmations: ${txPrizeReceipt.confirmations}
     `)
 
+    return txPrizeReceipt.contractAddress
 }
 
 deployPrize().catch((error) => {

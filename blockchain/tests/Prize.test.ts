@@ -152,7 +152,17 @@ describe("Prize Contract", async () => {
         expect(await prizeContract.highScores(player1.address)).to.be.eq(actualPersonalHighestScore);
       });
     });
+
+    describe("Someone claims", async () => {
+      it("reverts", async () => {
+        await expect(prizeContract
+          .connect(player1)
+          .claim())
+          .to.be.revertedWith("Game must be closed.");
+      });
+    });
   });
+
 
   describe("game is closed and it's not ended", async () => {
     const INITIAL_HC_GAME_AND_PLAYER: BigNumber = BigNumber.from(10)
