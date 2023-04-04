@@ -2,7 +2,7 @@
 import React, { RefCallback, useCallback, useEffect, useRef, useState } from "react";
 import Board, { BoardProps } from "../../panes/Board";
 import Welcome from "../../panels/Welcome";
-import { BoardCell, GameConfig, GameState, GameLevel, GameTitle, KeyCode, Direction } from "../../types";
+import { BoardCell, GameConfig, GameState, GameTitle, KeyCode, Direction } from "../../types";
 import StyledGame, { MainWrapper, StatusWrapper } from "./style";
 import Title from "../Title/title";
 import Status from "../../panes/Status"
@@ -22,14 +22,12 @@ export const Game = ({
   food: debugFood,
   snake: debugSnake,
   score: debugScore,
-  level: debugLevel,
   mute,
 }: GameProps) => {
   const [gameState, setGameState] = useState(debugState);
   const [food, setFood] = useState(debugFood);
   const [snake, setSnake] = useState(debugSnake);
   const [score, setScore] = useState(debugScore);
-  const [level, setLevel] = useState(debugLevel);
   const [direction, setDirection] = useState({ x: 0, y: 0 });
 
   // For callback or async use
@@ -43,7 +41,7 @@ export const Game = ({
 
   const [countDown, setCountDown] = useState<string>();
 
-  // Step timer
+  // Snake movement timer
   const [time, setTime] = React.useState(0);
 
   // Game board cell counts
@@ -51,21 +49,23 @@ export const Game = ({
 
   const sleep = (seconds: number) => new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 
-  const initBestScore = (level: GameLevel) => setBestScore(parseInt(localStorage.getItem(`SCORE_${level}`) || "0"));
-
+  // Sets the highScore to the score of the current storage local storage
+  // TODO: set score to the players wallet highest score
+  // Saves the highest score to the local storage
+  // TODO: setBetScore will trigger on click on button function
+  const initBestScore = () => setBestScore(parseInt(localStorage.getItem(`SCORE`) || "0"));
   const saveBestScore = () => {
     if (score > bestScore) {
       setIsBestScore(true);
       setBestScore(score);
-      localStorage.setItem(`SCORE_${level}`, score.toString());
+      localStorage.setItem(`SCORE`, score.toString());
     } else {
       setIsBestScore(false);
     }
   };
 
-  const startNewGame = async (level: GameLevel) => {
-    setLevel(level);
-    initBestScore(level);
+  const startNewGame = async () => {
+    initBestScore();
     setFood([]);
     setGameState(GameState.CountingDown);
     for (const i of [3, 2, 1]) {
@@ -198,14 +198,12 @@ export const Game = ({
     saveBestScore();
   }, [gameState]);
 
-  // Timer
+  // Snake movement speed
   useEffect(() => {
     const timer = window.setInterval(
-      () => setTime((prevTime) => prevTime + 1),
-      [400, 200, 100][Object.values(GameLevel).indexOf(level)]
-    );
+      () => setTime((prevTime) => prevTime + 1), 150);
     return () => clearInterval(timer);
-  }, [level]);
+  }, []);
 
   // Generate snake
   const [snakeLocked, setSnakeLocked] = useState(false);
@@ -224,12 +222,12 @@ export const Game = ({
       <MainWrapper $clickable={clickable()} onClick={changeState}>
         <Board food={food} snake={snake} state={gameState} />
         {gameState === GameState.Initial && <Welcome onClick={startNewGame} />}
-        {gameState === GameState.CountingDown && <Title size="large">{countDown}</Title>}
+        {gameState === GameState.CountingDown && <Title>{countDown}</Title>}
         {gameState === GameState.End && <Title>{isBestScore ? GameTitle.BestScore : GameTitle.GameOver}</Title>}
       </MainWrapper>
       <StatusWrapper>
         {gameState !== GameState.Initial && (
-          <Status score={score} level={level} bestScore={bestScore} stopped={gameState === GameState.End} />
+          <Status score={score} bestScore={bestScore} stopped={gameState === GameState.End} />
         )}
       </StatusWrapper>
     </StyledGame>

@@ -1,10 +1,8 @@
 import React from "react";
-import Level from "../../panes/Level";
 import StyledWelcome from "./style";
-import { GameLevel } from "types";
 
 interface WelcomeProps {
-  onClick: (level: GameLevel) => void;
+  onClick: () => void;
 }
 
 const Welcome = ({ onClick }: WelcomeProps) => {
@@ -12,7 +10,7 @@ const Welcome = ({ onClick }: WelcomeProps) => {
     <StyledWelcome>
       <h1>Jackpot Crawler</h1>
       <p>Choose level:</p>
-      <Level onClick={onClick} />
+      <p className="play" onClick={() => onClick()}>Play</p>
     </StyledWelcome>
   );
 };
