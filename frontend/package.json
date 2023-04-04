@@ -45,6 +45,9 @@
     ]
   },
   "devDependencies": {
-    "@types/styled-components": "^5.1.26"
+    "@types/styled-components": "^5.1.26",
+    "ethers": "^5.6.1",
+    "install": "^0.13.0",
+    "npm": "^9.6.3"
   }
 }
