@@ -26,7 +26,7 @@ async function completeTest() {
     const WINNER_SCORE: Number = 100
     const LOOSER: SignerWithAddress = accounts[1]
     const WINNER: SignerWithAddress = accounts[0]
-    const DURATION: BigNumber = await prizeContract.duration();
+    const DURATION: number = await prizeContract.duration();
 
     // Check game is closed before someone plays.
     expect(await prizeContract.isOpen()).to.be.equal(false)
@@ -66,7 +66,7 @@ async function completeTest() {
     await expect(claim(contractAddress, WINNER)).to.be.revertedWith("Game must be closed.")
 
     // End 
-    await time.increase(DURATION.add(10));
+    await time.increase(DURATION + 10);
 
     // Try to play and score as looser after game ended.
     await expect(play(contractAddress, LOOSER)).to.be.revertedWith("Game must be open.")
@@ -76,7 +76,7 @@ async function completeTest() {
     await expect(claim(contractAddress, LOOSER)).to.be.revertedWith("Grace period for the winner still running.")
 
     // End grace period 
-    await time.increase(DURATION.add(10));
+    await time.increase(DURATION + 10);
 
     // Claim as looser after grace period.
     await claim(contractAddress, LOOSER)
