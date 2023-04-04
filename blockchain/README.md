@@ -33,22 +33,38 @@ Run tests for the contract
 yarn hardhat test
 ```
 
-# Deploy to Hardhat Runtime Environment
+# Hardhat Runtime Environment
+
+Deploy to HRE.
 
 ```shell
 yarn run ts-node --files ./scripts/hre/deploy.ts
 ```
 
-## Test expected flow
+Test expected flow inside HRE.
 
 ```shell
 yarn run ts-node --files ./scripts/hre/completeTest.ts
 ```
 
-# Deploy to Polygon Mumbai
+# Deploy to Testnet
 
-In order to properly deploy to Polygon Mumbai, you need to have a funded account with MATIC. You can deploy the contract by running the following command:
+In order to properly deploy to a testnet, you need to have a funded account with desired testnet funds.
+
+## Mumbai
 
 ```shell
 yarn run ts-node --files ./scripts/mumbai/deploy.ts
+```
+
+## Sepolia
+
+```shell
+yarn run ts-node --files ./scripts/sepolia/deploy.ts
+```
+
+## Goerli
+
+```shell
+yarn run ts-node --files ./scripts/goerli/deploy.ts
 ```
