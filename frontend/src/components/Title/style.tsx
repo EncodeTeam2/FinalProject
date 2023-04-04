@@ -1,10 +1,8 @@
 import styled from "styled-components";
 
-const StyledTitle = styled.h2.attrs<{ $size: string }>(({ $size }) => ({
-  style: {
-    fontSize: $size === "large" ? "184px" : "120px",
-  },
-}))<{ $size: string }>`
+const StyledTitle = styled.h2.attrs(() => ({
+}))`
+  font-size: 184px;
   font-weight: 400;
   text-align: center;
   line-height: 0.95;

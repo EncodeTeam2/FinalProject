@@ -5,8 +5,6 @@ import { Nav } from "./components/Navbar/Navbar";
 import { Game } from "./components/Game/game";
 import ContractCard from "./components/ContractCard/ContractCard";
 
-declare let window: any;
-
 function App() {
 
   // Contract Address

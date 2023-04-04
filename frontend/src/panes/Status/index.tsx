@@ -6,7 +6,7 @@ interface StatusProps extends GameConfig {
   stopped: boolean;
 }
 
-const Status = ({ score, bestScore, level, stopped }: StatusProps) => {
+const Status = ({ score, bestScore, stopped }: StatusProps) => {
   const sharable = typeof window.navigator.share === "function" && stopped;
   const handleShare = () => {
     sharable &&
@@ -23,7 +23,7 @@ const Status = ({ score, bestScore, level, stopped }: StatusProps) => {
       <StyledShareButton onClick={handleShare} $stopped={sharable}>
         share!
       </StyledShareButton>
-      <p>{`${level} ${bestScore}`}</p>
+      <p>{`${bestScore}`} pts</p>
     </StyledStatus>
   );
 };
