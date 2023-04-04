@@ -8,22 +8,22 @@ import { setTimeout } from "timers/promises";
 import { latest } from "@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time";
 import { Provider } from "@ethersproject/providers";
 
+const PLAYING_FEE: BigNumber = ethers.utils.parseEther("0.1")
+const DURATION: BigNumber = BigNumber.from(30) // 30 secs.
+
+
 describe("Prize Contract", async () => {
   let prizeContract: Prize;
   let deployer: SignerWithAddress;
   let player1: SignerWithAddress;
   let player2: SignerWithAddress;
-  let playFee: BigNumber;
-  let duration: BigNumber;
 
   beforeEach(async () => {
     [deployer, player1, player2] = await ethers.getSigners();
 
     const prizeContractFactory = new Prize__factory(deployer);
-    prizeContract = await prizeContractFactory.deploy();
+    prizeContract = await prizeContractFactory.deploy(DURATION, PLAYING_FEE);
     await prizeContract.deployTransaction.wait();
-    playFee = await prizeContract.fee();
-    duration = await prizeContract.duration();
   });
 
   describe("When its deployed and hasn't started yet", async () => {
@@ -48,7 +48,7 @@ describe("Prize Contract", async () => {
       it("reverts when you pay the wrong fee", async () => {
         await expect(prizeContract
           .connect(player1)
-          .play({ value: playFee.mul(2) })) // Passing 2 * playFee.
+          .play({ value: PLAYING_FEE.mul(2) })) // Passing 2 * playFee.
           .to.be.revertedWith("Only the fee should be payed.");
       });
 
@@ -61,14 +61,14 @@ describe("Prize Contract", async () => {
 
 
         // Plays emitting event.
-        expect(await prizeContract.connect(player1).play({ value: playFee }))
+        expect(await prizeContract.connect(player1).play({ value: PLAYING_FEE }))
           .to.emit(prizeContract, "Play")
           .withArgs(gameId, player1.address);;
 
         // Values after playing.
         expect(await prizeContract.isOpen()).to.be.eq(true);
         expect(await prizeContract.startTime()).not.to.be.eq(0);
-        expect(await prizeContract.prizePool()).to.be.eq(playFee);
+        expect(await prizeContract.prizePool()).to.be.eq(PLAYING_FEE);
       });
     })
 
@@ -78,14 +78,14 @@ describe("Prize Contract", async () => {
 
     // So we have a game open before each test.
     beforeEach(async () => {
-      await prizeContract.connect(player1).play({ value: playFee })
+      await prizeContract.connect(player1).play({ value: PLAYING_FEE })
     })
 
     describe("Someone plays", async () => {
       it("reverts when you pay the wrong fee", async () => {
         await expect(prizeContract
           .connect(player1)
-          .play({ value: playFee.mul(2) })) // Passing 2 * playFee.
+          .play({ value: PLAYING_FEE.mul(2) })) // Passing 2 * playFee.
           .to.be.revertedWith("Only the fee should be payed.");
       });
 
@@ -96,10 +96,10 @@ describe("Prize Contract", async () => {
         // Play game
         const playTx = await prizeContract
           .connect(player1)
-          .play({ value: playFee })
+          .play({ value: PLAYING_FEE })
 
         // Check fee was added to prize succesfully.
-        expect(await prizeContract.prizePool()).to.be.equal(prizePoolBefore.add(playFee))
+        expect(await prizeContract.prizePool()).to.be.equal(prizePoolBefore.add(PLAYING_FEE))
       })
     })
 
@@ -170,16 +170,16 @@ describe("Prize Contract", async () => {
     // So we have a non default score and personal highscore.
     beforeEach(async () => {
       // Start a game
-      await prizeContract.connect(player1).play({ value: playFee })
+      await prizeContract.connect(player1).play({ value: PLAYING_FEE })
       // Mark high score with player 1
       await prizeContract.connect(player1).submitScore(INITIAL_HC_GAME_AND_PLAYER)
       // Close the game increasing duration + 10 to the block timestamp.
-      await time.increase(duration.add(10));
+      await time.increase(DURATION.add(10));
     })
 
     describe("Plays", async () => {
       it("Reverts", async () => {
-        await expect(prizeContract.connect(player1).play({ value: playFee })).to.be.revertedWith("Game must be open.");
+        await expect(prizeContract.connect(player1).play({ value: PLAYING_FEE })).to.be.revertedWith("Game must be open.");
       })
     })
 
@@ -215,7 +215,7 @@ describe("Prize Contract", async () => {
 
       it("Successfully as anybody outside grace period", async () => {
         // Close the grace period.
-        await time.increase(duration.mul(2));
+        await time.increase(DURATION.mul(2));
 
         // Get balances before.
         const accountBalanceBefore: BigNumber = await player2.getBalance()

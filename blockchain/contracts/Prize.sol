@@ -6,30 +6,34 @@ pragma solidity ^0.8.9;
 /// @notice you can use this contract for games with a pooled winnings/ high score format
 /// @dev This contract collects payments for pay to play game that pays out proceeds to player with highest score
 contract Prize {
-    /// Time is hardcoded to 300 sec
-    uint256 public duration = 300;
-
-    /// Timestamp of the game starting time and date
-    uint256 public startTime;
-
     /// The current high score for the current game
+    // TODO: Check if we can optimise.
     uint256 public highestScore;
 
     /// Fee paid for playing
-    uint256 public fee = 0.1 ether;
-
-    /// Address of owner to recieve winnings from prize pool
-    address public winnerAddress;
+    uint256 public fee;
 
     /// Collected pool of payments for playing the game and submitting high scores
     uint256 public prizePool;
 
+    /// Timestamp of the game starting time and date
+    // TODO: Check if we can optimise.
+    uint256 public startTime;
+
+    /// Address of owner to recieve winnings from prize pool
+    address public winnerAddress;
+
+    /// Duration of the game
+    uint16 public duration;
+
+    /// Game unique identificator.
+    uint16 public gameId = 1;
+
     /// Flag indicating whether the lottery is open for bets or not
     bool public isOpen;
 
-    uint16 public gameId = 1;
-
     /// Identifies recorded high score for specified address
+    // TODO: Check if we can optimise.
     mapping(address => uint256) public highScores;
 
     /// Event that will be fired when an user succesfully claim winnings.
@@ -69,6 +73,11 @@ contract Prize {
         address indexed ender,
         uint256 indexed timestamp
     );
+
+    constructor(uint16 _duration, uint256 _fee) {
+        duration = _duration;
+        fee = _fee;
+    }
 
     /// Modifier that will check that a game is open.
     modifier mustBeOpen() {
