@@ -10,6 +10,6 @@ const Title = ({ children }: TitleProps) => {
 };
 
 Title.defaultProps = {
-  children: GameTitle.BestScore,
+  children: GameTitle.HighScore,
 } as TitleProps;
 export default Title;

@@ -2,20 +2,29 @@ import React from "react";
 import StyledWelcome from "./style";
 
 interface WelcomeProps {
-  onClick: () => void;
+  play: () => void;
+  claim: () => void;
 }
 
-const Welcome = ({ onClick }: WelcomeProps) => {
+const Welcome = ({ play, claim}: WelcomeProps) => {
   return (
     <StyledWelcome>
       <h1>Jackpot Crawler</h1>
       <p>Choose level:</p>
-      <p className="play" onClick={() => onClick()}>Play</p>
+      <div>
+        <p className="menu-item" onClick={() => play()}>
+          Play
+        </p>
+        <p className="menu-item" onClick={() => claim()}>
+          Claim
+        </p>
+      </div>
     </StyledWelcome>
   );
 };
 
 Welcome.defaultProps = {
-  onClick: () => {},
+  play: () => {},
+  claim: () => {},
 };
 export default Welcome;

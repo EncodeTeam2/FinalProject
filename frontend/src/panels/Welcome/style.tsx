@@ -18,6 +18,14 @@ const StyledWelcome = styled.nav`
     margin-top: 48px;
   }
 
+  p.menu-item {
+    display: inline-block;
+    font-size: 34px;
+    margin-top: 24px;
+    margin-right: 24px;
+    padding-left: 24px;
+  }
+
   /* Level Pane */
   > :last-child {
     margin-top: -24px;

@@ -6,24 +6,18 @@ interface StatusProps extends GameConfig {
   stopped: boolean;
 }
 
-const Status = ({ score, bestScore, stopped }: StatusProps) => {
-  const sharable = typeof window.navigator.share === "function" && stopped;
-  const handleShare = () => {
-    sharable &&
-      window.navigator.share({
-        title: "Snake",
-        text: `I scored ${score} in Snake!`,
-        url: window.location.href,
-      });
-  };
+const Status = (props:any) => {
+  // console.log('props in status', props)
 
   return (
     <StyledStatus>
-      <p>{score}</p>
-      <StyledShareButton onClick={handleShare} $stopped={sharable}>
-        share!
-      </StyledShareButton>
-      <p>{`${bestScore}`} pts</p>
+      <p>{props.score}</p>
+      <button onClick={() => {
+        props.submitScore(props.bestScore);
+        }}>
+        Submit High Score
+      </button>
+      <p>{`${props.bestScore}`} pts</p>
     </StyledStatus>
   );
 };

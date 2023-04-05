@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const StyledTitle = styled.h2.attrs(() => ({
 }))`
-  font-size: 184px;
+  font-size: 96px;
   font-weight: 400;
   text-align: center;
   line-height: 0.95;
