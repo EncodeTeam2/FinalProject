@@ -34,6 +34,10 @@ export const Game = ({ state: debugState, food: debugFood, snake: debugSnake, sc
 
   const connectWalletHandler = async () => {
     if (window.ethereum) {
+      const chainId = (await provider.getNetwork()).chainId
+      if (chainId !== 80001) {
+        await switchNetwork()
+      }
       await window.ethereum.request({ method: "eth_requestAccounts" }).then((result: any) => {
         console.log("result of request", typeof result);
         console.log("Provider", provider);
@@ -47,6 +51,15 @@ export const Game = ({ state: debugState, food: debugFood, snake: debugSnake, sc
       setErrorMessage("Install MetaMask");
     }
   };
+
+  // Prompt the user to switch to the Mumbai testnet
+
+  async function switchNetwork() {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x13881' }],    // chainId must be in HEX with 0x in front
+    });
+  }
 
   const accountChangedHandler = (newAccount: any) => {
     console.log("New Account:", typeof newAccount);
@@ -272,24 +285,34 @@ export const Game = ({ state: debugState, food: debugFood, snake: debugSnake, sc
   }, [time]);
 
   return (
-    <StyledGame>
-      <MainWrapper $clickable={clickable()} onClick={changeState}>
-        <Board food={food} snake={snake} state={gameState} />
-        {gameState === GameState.Initial && <Welcome play={startNewGame} claim={claimPrizePool} />}
-        {gameState === GameState.CountingDown && <Title>{countDown}</Title>}
-        {gameState === GameState.End && <Title>{isBestScore ? GameTitle.HighScore : GameTitle.GameOver}</Title>}
-      </MainWrapper>
-      <StatusWrapper>
-        {gameState !== GameState.Initial && (
-          <Status
-            score={score}
-            bestScore={bestScore}
-            stopped={gameState === GameState.End}
-            submitScore={() => submitScore()}
-          />
-        )}
-      </StatusWrapper>
-    </StyledGame>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "80%"
+      }}
+    >
+      <StyledGame>
+        <MainWrapper $clickable={clickable()} onClick={changeState}>
+          <Board food={food} snake={snake} state={gameState} />
+          {gameState === GameState.Initial && <Welcome play={startNewGame} claim={claimPrizePool} />}
+          {gameState === GameState.CountingDown && <Title>{countDown}</Title>}
+          {gameState === GameState.End && <Title>{isBestScore ? GameTitle.HighScore : GameTitle.GameOver}</Title>}
+        </MainWrapper>
+        <StatusWrapper>
+          {gameState !== GameState.Initial && (
+            <Status
+              score={score}
+              bestScore={bestScore}
+              stopped={gameState === GameState.End}
+              submitScore={() => submitScore()}
+            />
+          )}
+        </StatusWrapper>
+      </StyledGame>
+    </div >
+
   );
 };
 

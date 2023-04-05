@@ -5,6 +5,7 @@ import { Nav } from "./components/Navbar/Navbar";
 import { Game } from "./components/Game/game";
 import ContractCard from "./components/ContractCard/ContractCard";
 import { ethers } from "ethers";
+import Rules from "components/Rules/rules";
 
 declare let window: any;
 
@@ -54,6 +55,7 @@ function App() {
       <Nav contractAddress={CONTRACT_ADDRESS} walletHandler={() => connectWalletHandler()} />
       <Gameboard />
       <Game />
+      <Rules />
     </div>
   );
 }
