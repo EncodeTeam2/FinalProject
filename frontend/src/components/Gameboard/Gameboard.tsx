@@ -12,19 +12,20 @@ export function Gameboard() {
 
   // Prize Contract
   const provider = new ethers.providers.JsonRpcProvider(
-    "https://polygon-mumbai.g.alchemy.com/v2/sIxoukO4CHHLSfVeQFBaD4imxyN83I4G"
+    "https://rpc-mumbai.maticvigil.com"
   );
   const prizeContract = new ethers.Contract(CONTRACT_ADDRESS, prizeABI.abi, provider);
 
   // Get Eth Price
-  const [ethPrice, setEthPrice] = useState(0);
-  const getEthPrice = async () => {
-    const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd");
+  const [maticPrice, setMaticPrice] = useState(0);
+  const getMaticPrice = async () => {
+    const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=matic-network&vs_currencies=usd");
     const data = await response.json();
-    setEthPrice(data.ethereum.usd);
+    console.log(data["matic-network"])
+    setMaticPrice(data["matic-network"].usd);
   };
   useEffect(() => {
-    getEthPrice();
+    getMaticPrice();
   }, []);
 
   // Get Pool Prize
@@ -59,7 +60,7 @@ export function Gameboard() {
   return (
     <Container className="gameboard">
       <Stack direction="horizontal" gap={3}>
-        <div>Eth price: {ethPrice}</div>
+        <div>MATIC price: {maticPrice}</div>
         <div>Prize pool: {prizePool}</div>
         <div>Game open until: {timeRemaining}</div>
       </Stack>
