@@ -31,7 +31,6 @@ export function Gameboard() {
   const [prizePool, setPoolPrize] = useState<string | number>(0);
   const getPoolPrize = async () => {
     const response = await prizeContract.prizePool();
-    console.log(response);
     setPoolPrize(ethers.utils.formatEther(response));
   };
   useEffect(() => {
@@ -42,14 +41,12 @@ export function Gameboard() {
   const [timeRemaining, setTimeRemaining] = useState<string | number>(0);
   const getTimeRemaining = async () => {
     const response = await prizeContract.startTime();
-    console.log("Time", response.toNumber());
     if (response.toNumber() === 0) {
       setTimeRemaining("Game waiting to be played");
       return;
     }
     let endTime = response.toNumber() + 300;
     let date = new Date(endTime * 1000);
-    console.log(date);
     setTimeRemaining(date.toString());
   };
   useEffect(() => {

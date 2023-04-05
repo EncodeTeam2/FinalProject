@@ -35,8 +35,6 @@ export const Game = ({ state: debugState, food: debugFood, snake: debugSnake, sc
   const connectWalletHandler = async () => {
     if (window.ethereum) {
       await window.ethereum.request({ method: "eth_requestAccounts" }).then((result: any) => {
-        console.log("result of request", typeof result);
-        console.log("Provider", provider);
         // TODO: make the signer be on the correct network or reject them from the site
         signer = provider.getSigner();
         prizeContract = new ethers.Contract(CONTRACT_ADDRESS, prizeABI.abi, signer);
@@ -49,7 +47,6 @@ export const Game = ({ state: debugState, food: debugFood, snake: debugSnake, sc
   };
 
   const accountChangedHandler = (newAccount: any) => {
-    console.log("New Account:", typeof newAccount);
     setDefaultAccount(newAccount);
   };
 
@@ -91,7 +88,6 @@ export const Game = ({ state: debugState, food: debugFood, snake: debugSnake, sc
   // TODO: setBetScore will trigger on click on button function
   const initBestScore = (score: any) => setBestScore(parseInt(score || "0"));
   const saveBestScore = () => {
-    console.log("You high score is", bestScore);
     if (score > bestScore) {
       setIsBestScore(true);
       setBestScore(score);
@@ -112,7 +108,6 @@ export const Game = ({ state: debugState, food: debugFood, snake: debugSnake, sc
       let address: string = await signer.getAddress();
       await prizeContract.play({ value: ethers.utils.parseEther("0.01") });
       highScore = await prizeContract.highScores(address);
-      console.log("high score for player", highScore.toNumber());
       initBestScore(highScore.toNumber());
       setFood([]);
       setGameState(GameState.CountingDown);

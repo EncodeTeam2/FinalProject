@@ -7,7 +7,6 @@ interface StatusProps extends GameConfig {
 }
 
 const Status = (props:any) => {
-  // console.log('props in status', props)
 
   return (
     <StyledStatus>

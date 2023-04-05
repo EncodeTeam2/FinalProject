@@ -5,7 +5,6 @@ import ConnectButton from "../ConnectButton/ConnectButton";
 import "./navbar.css";
 
 export function Nav(props: any) {
-  console.log(props);
   // Contract Hook and Address
   // const CONTRACT_ADDRESS = "0x4BB7050fa47A142e6a90E642D2a775fF5701e647";
 
