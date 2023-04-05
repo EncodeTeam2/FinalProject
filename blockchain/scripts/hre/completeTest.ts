@@ -9,9 +9,6 @@ import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 
 async function completeTest() {
-    //  connected to localhost blockchain
-    const provider = ethers.provider;
-
     // Get accounts signers
     const accounts = await ethers.getSigners();
 
@@ -22,8 +19,8 @@ async function completeTest() {
     const prizeContract = await attachToPrizeContract(contractAddress, accounts[3])
 
     const PLAY_FEE: BigNumber = await prizeContract.fee()
-    const LOOSER_SCORE: Number = 10
-    const WINNER_SCORE: Number = 100
+    const LOOSER_SCORE: number = 10
+    const WINNER_SCORE: number = 100
     const LOOSER: SignerWithAddress = accounts[1]
     const WINNER: SignerWithAddress = accounts[0]
     const DURATION: number = await prizeContract.duration();

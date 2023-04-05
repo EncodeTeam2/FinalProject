@@ -104,7 +104,7 @@ describe("Prize Contract", async () => {
     })
 
     describe("Someone submit score", async () => {
-      const INITIAL_HC_GAME_AND_PLAYER: BigNumber = BigNumber.from(10)
+      const INITIAL_HC_GAME_AND_PLAYER: number = 10
 
       // So we have a non default score and personal highscore.
       beforeEach(async () => {
@@ -113,8 +113,8 @@ describe("Prize Contract", async () => {
 
       it("Updates game highscore and sets winner address when game highscore is beaten", async () => {
         // Get actual score
-        const actualScore: BigNumber = await prizeContract.highestScore();
-        const higherScore: BigNumber = actualScore.add(10);
+        const actualScore: number = await prizeContract.highestScore();
+        const higherScore: number = actualScore + 10;
 
         // Submit a highest score
         await prizeContract.connect(player1).submitScore(higherScore);
@@ -127,8 +127,8 @@ describe("Prize Contract", async () => {
 
       it("Updates personal highscore when personal highscore is beat", async () => {
         // Get actual personal highest score
-        const actualPersonalHighestScore: BigNumber = await prizeContract.highScores(player1.address);
-        const personalHigherScore: BigNumber = actualPersonalHighestScore.add(10);
+        const actualPersonalHighestScore: number = await prizeContract.highScores(player1.address);
+        const personalHigherScore: number = actualPersonalHighestScore + 10;
 
         // Submit a highest score
         await prizeContract.connect(player1).submitScore(personalHigherScore);
@@ -139,10 +139,10 @@ describe("Prize Contract", async () => {
 
       it("Maintains scores when submission is not personal nor game highscore", async () => {
         // Get actual score
-        const actualGameHighestScore: BigNumber = await prizeContract.highestScore();
-        const actualPersonalHighestScore: BigNumber = await prizeContract.highScores(player1.address);
+        const actualGameHighestScore: number = await prizeContract.highestScore();
+        const actualPersonalHighestScore: number = await prizeContract.highScores(player1.address);
 
-        const notGameNorPersonalHigherScore: BigNumber = INITIAL_HC_GAME_AND_PLAYER.sub(1);
+        const notGameNorPersonalHigherScore: number = INITIAL_HC_GAME_AND_PLAYER - 1;
 
         // Submit a score that is not higher than personal nor game highest score.
         await prizeContract.connect(player1).submitScore(notGameNorPersonalHigherScore);
