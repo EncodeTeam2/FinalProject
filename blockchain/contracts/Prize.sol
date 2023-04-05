@@ -1,30 +1,28 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-/// @title A contract that pays out prize to winner
+/// @title Contract where users can stake their bets and then claim pot after locking period is ended.
 /// @author Team 2
-/// @notice you can use this contract for games with a pooled winnings/ high score format
+/// you can use this contract for games with a pooled winnings/ high score format
 /// @dev This contract collects payments for pay to play game that pays out proceeds to player with highest score
 contract Prize {
-    /// The current high score for the current game
-    // TODO: Check if we can optimise.
-    uint256 public highestScore;
-
     /// Fee paid for playing
     uint256 public fee;
 
     /// Collected pool of payments for playing the game and submitting high scores
     uint256 public prizePool;
 
-    /// Timestamp of the game starting time and date
-    // TODO: Check if we can optimise.
-    uint256 public startTime;
-
     /// Address of owner to recieve winnings from prize pool
     address public winnerAddress;
 
+    /// Timestamp of the game starting time and date
+    uint32 public startTime;
+
     /// Duration of the game
     uint16 public duration;
+
+    /// The current high score for the current game
+    uint16 public highestScore;
 
     /// Game unique identificator.
     uint16 public gameId = 1;
@@ -33,8 +31,7 @@ contract Prize {
     bool public isOpen;
 
     /// Identifies recorded high score for specified address
-    // TODO: Check if we can optimise.
-    mapping(address => uint256) public highScores;
+    mapping(address => uint16) public highScores;
 
     /// Event that will be fired when an user succesfully claim winnings.
     event Claim(
@@ -74,6 +71,7 @@ contract Prize {
         uint256 indexed timestamp
     );
 
+    /// Constructor will receive the duration of the game and the desired fee for playing.
     constructor(uint16 _duration, uint256 _fee) {
         duration = _duration;
         fee = _fee;
@@ -103,12 +101,13 @@ contract Prize {
     }
 
     /// Player pays a fee in order to play. The fee goes to the prize pool.
+    /// Play will also start new games when needed, setting game period values.
     function play() public payable {
         // If there's no current game, start one.
         if (startTime == 0 && !isOpen) {
             // Set game as open, mark starting timestamp, emit event and increment game id for next game.
             isOpen = true;
-            startTime = block.timestamp;
+            startTime = uint32(block.timestamp);
             emit Start(gameId, msg.sender, block.timestamp);
             gameId++;
         }
@@ -127,7 +126,8 @@ contract Prize {
     }
 
     /// Player can submit his score after playing the game.
-    function submitScore(uint256 score) public mustBeOpen {
+    /// It checks if it needs to update game score, personal score, both or none.
+    function submitScore(uint16 score) public mustBeOpen {
         // Check if it's a personal high score to update it.
         if (score > highScores[msg.sender]) {
             highScores[msg.sender] = score;
@@ -142,6 +142,8 @@ contract Prize {
         }
     }
 
+    /// Pot can be claimed by the winner inside the grace period. After the grace period anyone can claim.
+    /// Claim also ends the game and put values used for detecting the game period back to default.
     function claim() public mustBeClosed gracePeriod {
         // Set prize pool to zero before transferring.
         uint256 bal = prizePool;
