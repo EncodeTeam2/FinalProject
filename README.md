@@ -26,3 +26,10 @@ dApp built arround a simple game where players stake bets and winner takes pot. 
 
 - #### 📜 &nbsp;&nbsp;[Smart Contract](https://github.com/EncodeTeam2/FinalProject/blob/main/blockchain/README.md)
 - #### 🎨 &nbsp;&nbsp;[Frontend](https://github.com/EncodeTeam2/FinalProject/blob/main/frontend/README.md)
+
+# Captures
+
+![RULES](./assets/rules.png?raw=true "RULES")
+![INTRO](./assets/intro.png?raw=true "INTRO")
+![GAME](./assets/game.png?raw=true "GAME")
+![SCORE](./assets/score.png?raw=true "SCORE")
