@@ -22,7 +22,7 @@ dApp built arround a simple game where players stake bets and winner takes pot. 
 - Highest score that is sent from frontend could be manipulated
 - Someone can play on the edge of a game and when he tries to submit his score, the game is already closed.
 
-# Technical details
+# More details
 
 - #### 📜 &nbsp;&nbsp;[Smart Contract](https://github.com/EncodeTeam2/FinalProject/blob/main/blockchain/README.md)
 - #### 🎨 &nbsp;&nbsp;[Frontend](https://github.com/EncodeTeam2/FinalProject/blob/main/frontend/README.md)
