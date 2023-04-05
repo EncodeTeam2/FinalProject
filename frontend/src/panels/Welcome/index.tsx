@@ -6,11 +6,11 @@ interface WelcomeProps {
   claim: () => void;
 }
 
-const Welcome = ({ play, claim}: WelcomeProps) => {
+const Welcome = ({ play, claim }: WelcomeProps) => {
   return (
     <StyledWelcome>
       <h1>Jackpot Crawler</h1>
-      <p>Choose level:</p>
+      <p></p>
       <div>
         <p className="menu-item" onClick={() => play()}>
           Play
@@ -24,7 +24,7 @@ const Welcome = ({ play, claim}: WelcomeProps) => {
 };
 
 Welcome.defaultProps = {
-  play: () => {},
-  claim: () => {},
+  play: () => { },
+  claim: () => { },
 };
 export default Welcome;
