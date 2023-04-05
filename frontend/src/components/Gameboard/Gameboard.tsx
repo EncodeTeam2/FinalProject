@@ -8,12 +8,11 @@ import prizeABI from "../../assets/blockchain/Prize.json";
 declare let window: any;
 
 export function Gameboard() {
+  const CONTRACT_ADDRESS = "0x4BB7050fa47A142e6a90E642D2a775fF5701e647";
 
-   const CONTRACT_ADDRESS = "0xD48493103049326ddF73fC704939eb05Ae899e0b";
-   
   // Prize Contract
   const provider = new ethers.providers.JsonRpcProvider(
-    "mumbai provider"
+    "https://polygon-mumbai.g.alchemy.com/v2/sIxoukO4CHHLSfVeQFBaD4imxyN83I4G"
   );
   const prizeContract = new ethers.Contract(CONTRACT_ADDRESS, prizeABI.abi, provider);
 
@@ -34,20 +33,25 @@ export function Gameboard() {
     const response = await prizeContract.prizePool();
     console.log(response);
     setPoolPrize(ethers.utils.formatEther(response));
-  }
+  };
   useEffect(() => {
     getPoolPrize();
-}, []);
+  }, []);
 
   // Get Time Remaining and convert to users local time
   const [timeRemaining, setTimeRemaining] = useState<string | number>(0);
   const getTimeRemaining = async () => {
     const response = await prizeContract.startTime();
-    console.log('Time', response.toNumber());
+    console.log("Time", response.toNumber());
+    if (response.toNumber() === 0) {
+      setTimeRemaining("Game waiting to be played");
+      return;
+    }
     let endTime = response.toNumber() + 300;
     let date = new Date(endTime * 1000);
-    setTimeRemaining(date.toLocaleTimeString());
-  }
+    console.log(date);
+    setTimeRemaining(date.toString());
+  };
   useEffect(() => {
     getTimeRemaining();
   }, []);
@@ -55,11 +59,9 @@ export function Gameboard() {
   return (
     <Container className="gameboard">
       <Stack direction="horizontal" gap={3}>
-        <div>Eth price: { ethPrice }</div>
-        <div>Prize pool: { prizePool }</div>
-        <div>Time Remaining: {timeRemaining}</div>
-        <div>Your High Score: </div>
-        <div>Pot High Score: </div>
+        <div>Eth price: {ethPrice}</div>
+        <div>Prize pool: {prizePool}</div>
+        <div>Game open until: {timeRemaining}</div>
       </Stack>
     </Container>
   );

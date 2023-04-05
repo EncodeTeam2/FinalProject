@@ -22,7 +22,7 @@ export const defaultGameConfig: GameConfig = {
 export enum GameTitle {
   Go = "GO",
   GameOver = "GAME OVER",
-  BestScore = "BEST SCORE",
+  HighScore = "New High Score",
 }
 
 export enum GameState {

@@ -1,17 +1,8 @@
 import styled from "styled-components";
 
-/* 
-const displayMixin = (display: boolean) => css`
-  opacity: ${display ? '1' : '0'};
-  pointer-events: ${display ? '' : 'none'};
-`;
-*/
 
-const StyledShareButton = styled.p.attrs<{ $stopped: boolean }>(({ $stopped }) => ({
-  style: {
-    visibility: $stopped ? "" : "hidden",
-  },
-}))<{ $stopped: boolean }>`
+const StyledShareButton = styled.p.attrs(() => ({
+}))`
   cursor: pointer;
   width: 145px;
   margin-left: 34px;

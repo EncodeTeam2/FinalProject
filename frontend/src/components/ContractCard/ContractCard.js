@@ -9,7 +9,7 @@ const WalletCard = () => {
   const [connButtonText, setConnButtonText] = useState("Connect Wallet");
   const [contractAddressTitle, setContractAddressTitle] = useState(null);
 
-  const CONTRACT_ADDRESS = "0xD48493103049326ddF73fC704939eb05Ae899e0b";
+  const CONTRACT_ADDRESS = "0x4BB7050fa47A142e6a90E642D2a775fF5701e647";
 
   const connectWalletHandler = () => {
     if (window.ethereum) {

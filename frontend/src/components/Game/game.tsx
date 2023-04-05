@@ -5,8 +5,12 @@ import Welcome from "../../panels/Welcome";
 import { BoardCell, GameConfig, GameState, GameTitle, KeyCode, Direction } from "../../types";
 import StyledGame, { MainWrapper, StatusWrapper } from "./style";
 import Title from "../Title/title";
-import Status from "../../panes/Status"
+import Status from "../../panes/Status";
 import { useSwipeable } from "react-swipeable";
+import { BigNumber, ethers } from "ethers";
+import prizeABI from "../../assets/blockchain/Prize.json";
+
+declare let window: any;
 
 interface GameProps extends BoardProps, GameConfig {
   mute: boolean;
@@ -17,13 +21,45 @@ interface Coordinate {
   y: number;
 }
 
-export const Game = ({
-  state: debugState,
-  food: debugFood,
-  snake: debugSnake,
-  score: debugScore,
-  mute,
-}: GameProps) => {
+export const Game = ({ state: debugState, food: debugFood, snake: debugSnake, score: debugScore }: GameProps) => {
+  const CONTRACT_ADDRESS: string = "0x4BB7050fa47A142e6a90E642D2a775fF5701e647";
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  let prizeContract: any;
+  let signer: ethers.Signer;
+  let highScore: BigNumber;
+
+  const [defaultAccount, setDefaultAccount] = useState(null);
+  const [errorMessage, setErrorMessage] = useState<null | string>(null);
+  const [connButtonText, setConnButtonText] = useState("Connect Wallet");
+
+  const connectWalletHandler = async () => {
+    if (window.ethereum) {
+      await window.ethereum.request({ method: "eth_requestAccounts" }).then((result: any) => {
+        console.log("result of request", typeof result);
+        console.log("Provider", provider);
+        // TODO: make the signer be on the correct network or reject them from the site
+        signer = provider.getSigner();
+        prizeContract = new ethers.Contract(CONTRACT_ADDRESS, prizeABI.abi, signer);
+        buttonTextHandler(result[0]);
+        return signer;
+      });
+    } else {
+      setErrorMessage("Install MetaMask");
+    }
+  };
+
+  const accountChangedHandler = (newAccount: any) => {
+    console.log("New Account:", typeof newAccount);
+    setDefaultAccount(newAccount);
+  };
+
+  const buttonTextHandler = (account: string) => {
+    let stringVal = account;
+    let shortenString1st = stringVal.substring(0, 6).concat("...");
+    let shortenString2nd = stringVal.slice(-3);
+    setConnButtonText(shortenString1st + shortenString2nd);
+  };
+
   const [gameState, setGameState] = useState(debugState);
   const [food, setFood] = useState(debugFood);
   const [snake, setSnake] = useState(debugSnake);
@@ -53,8 +89,9 @@ export const Game = ({
   // TODO: set score to the players wallet highest score
   // Saves the highest score to the local storage
   // TODO: setBetScore will trigger on click on button function
-  const initBestScore = () => setBestScore(parseInt(localStorage.getItem(`SCORE`) || "0"));
+  const initBestScore = (score: any) => setBestScore(parseInt(score || "0"));
   const saveBestScore = () => {
+    console.log("You high score is", bestScore);
     if (score > bestScore) {
       setIsBestScore(true);
       setBestScore(score);
@@ -64,22 +101,40 @@ export const Game = ({
     }
   };
 
-  const startNewGame = async () => {
-    initBestScore();
-    setFood([]);
-    setGameState(GameState.CountingDown);
-    for (const i of [3, 2, 1]) {
-      setCountDown(i.toString());
-      await sleep(0.5);
-    }
-    setCountDown(GameTitle.Go);
-    await sleep(0.5);
+  const submitScore = async () => {
+    await connectWalletHandler().then(async () => {
+      await prizeContract.submitScore(bestScore);
+    });
+  };
 
-    const initSnake = [53, 32, 11];
-    setDirection(Direction.down);
-    setSnake(initSnake);
-    generateFood(initSnake);
-    setGameState(GameState.Playing);
+  const startNewGame = async () => {
+    await connectWalletHandler().then(async (wallet) => {
+      let address: string = await signer.getAddress();
+      await prizeContract.play({ value: ethers.utils.parseEther("0.01") });
+      highScore = await prizeContract.highScores(address);
+      console.log("high score for player", highScore.toNumber());
+      initBestScore(highScore.toNumber());
+      setFood([]);
+      setGameState(GameState.CountingDown);
+      for (const i of [3, 2, 1]) {
+        setCountDown(i.toString());
+        await sleep(0.5);
+      }
+      setCountDown(GameTitle.Go);
+      await sleep(0.5);
+
+      const initSnake = [53, 32, 11];
+      setDirection(Direction.down);
+      setSnake(initSnake);
+      generateFood(initSnake);
+      setGameState(GameState.Playing);
+    });
+  };
+
+  const claimPrizePool = async () => {
+    await connectWalletHandler().then(async () => {
+      await prizeContract.claim();
+    });
   };
 
   const toCoordinate = (ordinal: number) => {
@@ -200,8 +255,7 @@ export const Game = ({
 
   // Snake movement speed
   useEffect(() => {
-    const timer = window.setInterval(
-      () => setTime((prevTime) => prevTime + 1), 150);
+    const timer = window.setInterval(() => setTime((prevTime) => prevTime + 1), 150);
     return () => clearInterval(timer);
   }, []);
 
@@ -221,13 +275,18 @@ export const Game = ({
     <StyledGame>
       <MainWrapper $clickable={clickable()} onClick={changeState}>
         <Board food={food} snake={snake} state={gameState} />
-        {gameState === GameState.Initial && <Welcome onClick={startNewGame} />}
+        {gameState === GameState.Initial && <Welcome play={startNewGame} claim={claimPrizePool} />}
         {gameState === GameState.CountingDown && <Title>{countDown}</Title>}
-        {gameState === GameState.End && <Title>{isBestScore ? GameTitle.BestScore : GameTitle.GameOver}</Title>}
+        {gameState === GameState.End && <Title>{isBestScore ? GameTitle.HighScore : GameTitle.GameOver}</Title>}
       </MainWrapper>
       <StatusWrapper>
         {gameState !== GameState.Initial && (
-          <Status score={score} bestScore={bestScore} stopped={gameState === GameState.End} />
+          <Status
+            score={score}
+            bestScore={bestScore}
+            stopped={gameState === GameState.End}
+            submitScore={() => submitScore()}
+          />
         )}
       </StatusWrapper>
     </StyledGame>
